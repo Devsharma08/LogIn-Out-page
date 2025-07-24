@@ -1,0 +1,76 @@
+# --- General OS and IDE Files ---
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+*.tmp
+
+# IDE settings
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- Environment Files ---
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# --- Logs ---
+logs/
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- node_modules and Cache ---
+node_modules/
+**/node_modules/
+**/.turbo/
+**/.next/
+**/.vite/
+**/.cache/
+
+# --- Build and Coverage Output ---
+dist/
+build/
+coverage/
+**/dist/
+**/build/
+**/coverage/
+
+# --- Frontend Specific (React/Vite/CSS) ---
+frontend/.DS_Store
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/coverage/
+frontend/.env
+frontend/.env.local
+frontend/.vite/
+frontend/project.lock
+frontend/package-lock.json
+frontend/yarn.lock
+
+# --- Backend Specific (Express/Node) ---
+backend/.DS_Store
+backend/node_modules/
+backend/dist/
+backend/coverage/
+backend/.env
+backend/.env.local
+backend/project.lock
+backend/package-lock.json
+backend/yarn.lock
+
+# --- Optional Docker ---
+docker-compose.override.yml
+*.env.*
+
+# --- Ignore lock files if using workspace managers like pnpm ---
+*.lock
