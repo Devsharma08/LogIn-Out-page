@@ -33,6 +33,15 @@ export class Auth {
   resetPassword(token: string, data: any) {
    return this.http.post(`${this.baseUrl}/reset-password/${token}`, data);
   }
+
+  sendOtp(data: { email: string }) {
+  return this.http.post<{ message: string }>(`${this.baseUrl}/send-otp`, data);
+}
+
+verifyOtp(data: { email: string, otp: string }) {
+  return this.http.post<{ message: string }>(`${this.baseUrl}/verify-otp`, data);
+}
+
   
   isAuthenticated() {
   return this.http.get('http://localhost:5000/api/v1/auth/verify', { withCredentials: true })

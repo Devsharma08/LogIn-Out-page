@@ -1,9 +1,14 @@
 const User = require('../model/UserModel');
 const { BadRequest, UnauthenticatedError } = require('../error');
-const attachCookiesToResponse = require('../utils/attachCookies');
-const { createJWT } = require('../utils/jwt');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail'); 
+const {
+  attachCookiesToResponse,
+  authenticateUser,
+  createJWT,
+  isTokenValid,
+  sendEmail,
+  sendOTP,
+  generateOTP } = require('../utils')
 
 // @desc    Register user
 const register = async (req, res, next) => {
@@ -81,26 +86,20 @@ const forgotPassword = async (req, res) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
- const resetURL = `http://localhost:4200/reset-password/${resetToken}`;
-
-
-  const message = `<p>Forgot your password? Click to reset: <a href="${resetURL}">Reset</a></p>`;
+  const resetURL = `http://localhost:4200/reset-password/${resetToken}`;
+  const html = `<p>Forgot password? Click <a href="${resetURL}">here</a> to reset. Valid for 10 minutes.</p>`;
 
   try {
-    await sendEmail({
-      to: user.email,
-      subject: 'Password Reset',
-      html: message,
-    });
-
-    res.status(200).json({ msg: 'Reset token sent to email' });
-  } catch (err) {
+    await sendEmail({ to: email, subject: 'Password Reset', html });
+    res.status(200).json({ msg: 'Reset link sent to your email' });
+  } catch (error) {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
     res.status(500).json({ msg: 'Email could not be sent' });
   }
 };
+
 
 const resetPassword = async (req, res) => {
   const { token } = req.params;
@@ -123,11 +122,80 @@ const resetPassword = async (req, res) => {
 };
 
 
+const sendOTPToEmail = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "Email not registered" });
+  }
+
+  const generatedOtp = generateOTP(); // e.g., Math.floor(100000 + Math.random() * 900000).toString()
+
+user.otp = generatedOtp;
+user.otpExpiry = Date.now() + 5 * 60 * 1000; // 5 mins
+await user.save();
+
+console.log('Sent OTP:', generatedOtp)
+console.log('OTP expire: ', user.otpExpiry)
+
+
+  const message = `<p>OTP is <b> ${generatedOtp} </b> and will be expired in <b> ${user.otpExpiry} </b></p>`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: 'OTP verification',
+      html: message,
+    });
+
+    res.status(200).json({ msg: 'OTP sent to your email' });
+  } catch (err) {
+   user.otpExpiry = undefined;
+    user.otp = undefined;
+    await user.save();
+    res.status(500).json({ msg: 'Email could not be sent' });
+  }
+};
+
+
+
+
+const verifyOTP = async (req, res, next) => {
+  const { email, otp } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new BadRequest('User not found'));
+  }
+
+  if (user.otp !== otp || user.otpExpiry < Date.now()) {
+    return next(new BadRequest('Invalid or expired OTP'));
+  }
+
+  // OTP is valid
+  user.otp = null;
+  user.otpExpiry = null;
+  await user.save();
+
+  const tokenUser = { name: user.name, userId: user._id };
+  attachCookiesToResponse({ res, user: tokenUser });
+
+  res.status(200).json({
+    success: true,
+    user: tokenUser,
+    message: 'OTP verified, logged in successfully',
+  });
+};
+
+
 
 module.exports = {
   register,
   login,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  sendOTPToEmail,
+  verifyOTP
 };
