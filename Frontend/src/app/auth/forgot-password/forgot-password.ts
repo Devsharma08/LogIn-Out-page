@@ -16,6 +16,7 @@ export class ForgotPassword {
   constructor(private auth: Auth) {}
 
   onForgotPassword() {
+    this.message = true;
     this.auth.forgotPassword({ email: this.email }).subscribe({
       next: (res: any) =>{ 
         this.message = true;

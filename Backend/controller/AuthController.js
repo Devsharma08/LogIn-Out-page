@@ -188,6 +188,10 @@ const verifyOTP = async (req, res, next) => {
   });
 };
 
+const getAllData = async(req,res) =>{
+  console.log(req.userId);
+}
+
 
 
 module.exports = {
@@ -197,5 +201,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   sendOTPToEmail,
-  verifyOTP
+  verifyOTP,
+  getAllData
 };

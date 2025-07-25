@@ -42,9 +42,8 @@ verifyOtp(data: { email: string, otp: string }) {
   return this.http.post<{ message: string }>(`${this.baseUrl}/verify-otp`, data);
 }
 
-  
+
   isAuthenticated() {
   return this.http.get('http://localhost:5000/api/v1/auth/verify', { withCredentials: true })
-
 }
 }

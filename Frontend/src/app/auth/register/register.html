@@ -1,13 +1,19 @@
-<div class="register-container">
-  <h2>Register</h2>
+<div class=" d-flex justify-content-center align-items-center" style="height: 80vh;">
+<div class="d-flex flex-column gap-3 register-container w-25 ">
+  <h2 class="text-center">Register</h2>
 
-  <input [(ngModel)]="name" placeholder="Name" />
-  <input [(ngModel)]="email" placeholder="Email" />
-  <input [(ngModel)]="password" type="password" placeholder="Password" />
+  <input class="form-control" [(ngModel)]="name" placeholder="Name" />
+  <input class="form-control" [(ngModel)]="email" placeholder="Email" />
+  <input class="form-control" [(ngModel)]="password" type="password" placeholder="Password" />
 
-  <div>
-    <button (click)="registerUser()">Register</button>
+  <div class="row mt-2">
+    <button class="btn btn-success col-4 ml-2 " (click)="registerUser()">Register User</button>
+  
+    <p class="col-8">Already have a account
+    <a href="/login">Login</a>  
+    </p>
+    
   </div>
-  <div *ngIf="error">{{error}}</div>
-
+  <div class="text-danger" *ngIf="error">{{error}}</div>
+</div>
 </div>

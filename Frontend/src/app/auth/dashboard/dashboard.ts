@@ -4,15 +4,19 @@ import { Auth } from '../../services/auth';
 @Component({
   selector: 'app-dashboard',
   imports: [],
-   template: `
-    <h2>Welcome to your Dashboard!</h2>
-    <button (click)="logout()">Logout</button>
-  `,
+  templateUrl:'./dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth) {
+  }
 
+  ngOnInit(){
+  //   this.auth.getAllData().subscribe({
+  //   next:()=>{},
+  //   error:()=>{}
+  // })
+}
   logout() {
     this.auth.logout();
   }
